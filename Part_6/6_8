@@ -1,0 +1,59 @@
+CREATE TABLE PUBLISHER (
+  Name     VARCHAR(40) NOT NULL,
+  Address  VARCHAR(80),
+  Phone    VARCHAR(15),
+  CONSTRAINT pk_publisher PRIMARY KEY (Name)
+);
+CREATE TABLE BOOK (
+  Book_id         INT          NOT NULL,
+  Title           VARCHAR(100) NOT NULL,
+  Publisher_name  VARCHAR(40),
+  CONSTRAINT pk_book PRIMARY KEY (Book_id),
+  CONSTRAINT fk_book_pub FOREIGN KEY (Publisher_name) REFERENCES PUBLISHER (Name)
+             ON DELETE SET NULL ON UPDATE CASCADE
+);
+CREATE TABLE BOOK_AUTHORS (
+  Book_id      INT         NOT NULL,
+  Author_name  VARCHAR(50) NOT NULL,
+  CONSTRAINT pk_book_authors PRIMARY KEY (Book_id, Author_name),
+  CONSTRAINT fk_ba_book FOREIGN KEY (Book_id) REFERENCES BOOK (Book_id)
+             ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE TABLE LIBRARY_BRANCH (
+  Branch_id    INT         NOT NULL,
+  Branch_name  VARCHAR(40) NOT NULL,
+  Address      VARCHAR(80),
+  CONSTRAINT pk_branch PRIMARY KEY (Branch_id)
+);
+CREATE TABLE BOOK_COPIES (
+  Book_id       INT      NOT NULL,
+  Branch_id     INT      NOT NULL,
+  No_of_copies  SMALLINT NOT NULL DEFAULT 1 CHECK (No_of_copies >= 0),
+  CONSTRAINT pk_copies PRIMARY KEY (Book_id, Branch_id),
+  CONSTRAINT fk_bc_book FOREIGN KEY (Book_id) REFERENCES BOOK (Book_id)
+             ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_bc_branch FOREIGN KEY (Branch_id) REFERENCES LIBRARY_BRANCH (Branch_id)
+             ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE TABLE BORROWER (
+  Card_no  INT         NOT NULL,
+  Name     VARCHAR(50) NOT NULL,
+  Address  VARCHAR(80),
+  Phone    VARCHAR(15),
+  CONSTRAINT pk_borrower PRIMARY KEY (Card_no)
+);
+CREATE TABLE BOOK_LOANS (
+  Book_id    INT  NOT NULL,
+  Branch_id  INT  NOT NULL,
+  Card_no    INT  NOT NULL,
+  Date_out   DATE NOT NULL,
+  Due_date   DATE NOT NULL,
+  CONSTRAINT pk_loans PRIMARY KEY (Book_id, Branch_id, Card_no),
+  CONSTRAINT chk_due CHECK (Due_date >= Date_out),
+  CONSTRAINT fk_bl_book FOREIGN KEY (Book_id) REFERENCES BOOK (Book_id)
+             ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_bl_branch FOREIGN KEY (Branch_id) REFERENCES LIBRARY_BRANCH (Branch_id)
+             ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_bl_borrower FOREIGN KEY (Card_no) REFERENCES BORROWER (Card_no)
+             ON DELETE RESTRICT ON UPDATE CASCADE
+);
