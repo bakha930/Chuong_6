@@ -1,0 +1,24 @@
+//a 
+SELECT Name FROM STUDENT WHERE Class = 4 AND Major = 'CS';
+
+//b
+SELECT DISTINCT C.Course_name
+FROM   COURSE C JOIN SECTION S ON C.Course_number = S.Course_number
+WHERE  S.Instructor = 'King' AND S.Year IN (
+
+//c
+SELECT S.Course_number, S.Semester, S.Year, COUNT(G.Student_number) AS No_of_students
+FROM   SECTION S LEFT JOIN GRADE_REPORT G ON S.Section_identifier = G.Section_identifier
+WHERE  S.Instructor = 'King'
+GROUP BY S.Section_identifier, S.Course_number, S.Semester, S.Year;
+
+//d
+SELECT ST.Name, C.Course_name, C.Course_number, C.Credit_hours,
+       S.Semester, S.Year, G.Grade
+FROM   STUDENT ST
+       JOIN GRADE_REPORT G ON ST.Student_number = G.Student_number
+       JOIN SECTION S      ON G.Section_identifier = S.Section_identifier
+       JOIN COURSE C       ON S.Course_number = C.Course_number
+WHERE  ST.Class = 4 AND ST.Major = 'CS'
+ORDER BY ST.Name, S.Year, S.Semester;
+
